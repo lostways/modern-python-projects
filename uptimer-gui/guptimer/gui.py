@@ -15,6 +15,31 @@ COLORS = {
 def main():
     """Draw a GUI for checking URLs"""
 
+    def check_urls():
+        # Grap text from URLs box and split by new lines
+        urls_string = urls_box.get("1.0", tk.END)
+        urls = urls_string.rstrip().split("\n")
+
+        # Enable response box for editing
+        response_box.configure(state="normal")
+
+        # Remove contents of the response box
+        response_box.delete("1.0", tk.END)
+
+        # Add colorized statuses
+        for line, url in enumerate(urls, start=1):
+            status_code = check_url(url)
+            if status_code:
+                response_box.insert(tk.END, str(status_code) + "\n")
+                fg_color = COLORS.get(status_code // 100, "magenta")
+                response_box.tag_add(fg_color, f"{line}.0", f"{line}.9")
+            else:
+                response_box.insert(tk.END, "Wrong URL !\n")
+                response_box.tag_add("magenta", f"{line}.0", f"{line}.9")
+
+        # Disable response box for editing
+        response_box.configure(state="disabled")
+
     # Create window
     window = tk.Tk()
     window.config(bg="#f6f6f6")
@@ -44,31 +69,12 @@ def main():
     # Start main loop
     window.mainloop()
 
-    def check_urls():
-        # Grap text from URLs box and split by new lines
-        urls_string = urls_box.get("1.0", tk.END)
-        urls = urls_string.rstrip().split("\n")
 
-        # Enable response box for editing
-        response_box.configure(state="normal")
-
-        # Remove contents of the response box
-        response_box.delete("1.0", tk.END)
-
-        # Add colorized statuses
-        for line, url in enumerate(urls, start=1):
-            status_code = check_url(url)
-            if status_code:
-                response_box.insert(tk.END, str(status_code) + "\n")
-                fg_color = COLORS.get(status_code // 100, "magenta")
-                response_box.tag_add(fg_color, f"{line}.0", f"{line}.9")
-            else:
-                response_box.insert(tk.END, "Wrong URL !\n")
-                response_box.tag_add("magenta", f"{line}.0", f"{line}.9")
-
-        # Disable response box for editing
-        response_box.configure(state="disabled")
-
+# Test URLs:
+# http://httpstat.us/200
+# http://httpstat.us/301
+# http://httpstat.us/404
+# http://httpstat.us/500
 
 if __name__ == "__main__":
     main()
